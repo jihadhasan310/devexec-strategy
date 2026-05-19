@@ -123,7 +123,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-[#1E2230] flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[#8892A4] text-xs font-mono">
-            © 2025 Devexec Strategy. All rights reserved.
+            © 2026 Devexec Strategy. All rights reserved.
           </p>
           <p className="text-[#8892A4] text-xs font-mono">
             Engineering the Future. Executing at Scale.
