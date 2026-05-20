@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Star } from "lucide-react";
+import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 const testimonials = [
   {
@@ -50,7 +51,7 @@ function StarRating({ count }: { count: number }) {
 export default function Testimonials() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   return (
     <section

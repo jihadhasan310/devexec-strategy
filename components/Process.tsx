@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 const steps = [
   {
@@ -39,7 +40,7 @@ const steps = [
 export default function Process() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   return (
     <section

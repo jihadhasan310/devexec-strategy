@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { motion, useInView, useReducedMotion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 const stats = [
   { value: 50, suffix: "+", label: "Projects Delivered" },
@@ -20,7 +21,7 @@ function CountUp({
   inView: boolean;
 }) {
   const [count, setCount] = useState(0);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   useEffect(() => {
     if (!inView) return;
@@ -59,7 +60,7 @@ function CountUp({
 export default function WhyUs() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   return (
     <section

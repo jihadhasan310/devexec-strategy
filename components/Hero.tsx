@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
+import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 const techBadges = ["AI", "Cloud", "Blockchain", "Automation", "SaaS"];
 const words = ["AI Systems", "Cloud Infra", "Blockchain", "SaaS Platforms"];
@@ -25,7 +26,7 @@ const itemVariants: Variants = {
 
 function AnimatedWord() {
   const [index, setIndex] = useState(0);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   useEffect(() => {
     if (prefersReduced) return;
@@ -57,7 +58,7 @@ function AnimatedWord() {
 
 function GridBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   useEffect(() => {
     if (prefersReduced) return;
@@ -179,7 +180,7 @@ function GridBackground() {
 }
 
 export default function Hero() {
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
   const motionProps = prefersReduced
     ? {}

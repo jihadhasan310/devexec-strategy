@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion, useInView, type Variants } from "framer-motion";
+import { motion, useInView, type Variants } from "framer-motion";
 import { useRef } from "react";
 import { Bot, Cloud, Link2, Cog, Rocket } from "lucide-react";
 import Card from "@/components/ui/Card";
+import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 const services = [
   {
@@ -69,8 +70,8 @@ const cardVariants: Variants = {
 
 export default function Services() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const prefersReduced = useReducedMotion();
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const prefersReduced = useMotionSafe();
 
   return (
     <section
