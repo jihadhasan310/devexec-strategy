@@ -54,7 +54,6 @@ const services = [
   },
 ];
 
-// Each card manages its own visibility so no card can get stuck hidden
 function ServiceCard({
   service,
   index,
@@ -65,18 +64,19 @@ function ServiceCard({
   prefersReduced: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  // amount:0 = fires as soon as 1px enters viewport — critical for mobile
   const isInView = useInView(ref, { once: true, amount: 0 });
   const Icon = service.icon;
 
   return (
     <motion.div
       ref={ref}
-      initial={prefersReduced ? undefined : { opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : undefined}
+      // Always animate to visible — never leave stuck at opacity:0
+      initial={{ opacity: 0, y: prefersReduced ? 0 : 40 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.5,
-        delay: prefersReduced ? 0 : index * 0.08,
+        duration: prefersReduced ? 0 : 0.5,
+        // Only delay once the element is in view; if already in view on mount, delay=0
+        delay: prefersReduced || !isInView ? 0 : index * 0.08,
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
       role="listitem"
@@ -128,7 +128,6 @@ function ServiceCard({
 
 export default function Services() {
   const headerRef = useRef<HTMLDivElement>(null);
-  // amount:0 fires immediately when any part of the header enters viewport
   const headerInView = useInView(headerRef, { once: true, amount: 0 });
   const prefersReduced = useMotionSafe();
 
@@ -139,12 +138,12 @@ export default function Services() {
       aria-labelledby="services-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header — has its own ref, independent of cards */}
+        {/* Header */}
         <motion.div
           ref={headerRef}
-          initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : undefined}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: prefersReduced ? 0 : 0.6 }}
           className="text-center mb-16"
         >
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
@@ -163,7 +162,7 @@ export default function Services() {
           </p>
         </motion.div>
 
-        {/* Cards — each card watches itself, can never get stuck invisible */}
+        {/* Cards */}
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           role="list"

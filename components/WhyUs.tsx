@@ -25,40 +25,23 @@ function CountUp({
 
   useEffect(() => {
     if (!inView) return;
-    if (prefersReduced) {
-      setCount(target);
-      return;
-    }
-    const duration = 1800;
+    if (prefersReduced) { setCount(target); return; }
     const steps = 60;
     const increment = target / steps;
-    let current = 0;
     let step = 0;
     const timer = setInterval(() => {
       step++;
-      current = Math.min(increment * step, target);
-      setCount(current);
+      setCount(Math.min(increment * step, target));
       if (step >= steps) clearInterval(timer);
-    }, duration / steps);
+    }, 1800 / steps);
     return () => clearInterval(timer);
   }, [inView, target, prefersReduced]);
 
-  const display =
-    target % 1 !== 0 ? count.toFixed(1) : Math.round(count).toString();
-
-  return (
-    <span>
-      {display}
-      {suffix}
-    </span>
-  );
+  const display = target % 1 !== 0 ? count.toFixed(1) : Math.round(count).toString();
+  return <span>{display}{suffix}</span>;
 }
 
-function StatCard({
-  stat,
-  index,
-  prefersReduced,
-}: {
+function StatCard({ stat, index, prefersReduced }: {
   stat: (typeof stats)[number];
   index: number;
   prefersReduced: boolean;
@@ -69,9 +52,9 @@ function StatCard({
   return (
     <motion.div
       ref={ref}
-      initial={prefersReduced ? undefined : { opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : undefined}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
+      initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: prefersReduced ? 0 : index * 0.1, duration: prefersReduced ? 0 : 0.5 }}
       role="listitem"
       className="text-center"
     >
@@ -87,13 +70,31 @@ function StatCard({
   );
 }
 
-export default function WhyUs() {
-  const headingRef = useRef<HTMLDivElement>(null);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const prefersReduced = useMotionSafe();
+function PillarCard({ item, index, prefersReduced }: {
+  item: { title: string; desc: string };
+  index: number;
+  prefersReduced: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
 
-  const headingInView = useInView(headingRef, { once: true, amount: 0 });
-  const leftInView = useInView(leftRef, { once: true, amount: 0 });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: prefersReduced ? 0 : 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: prefersReduced ? 0 : 0.1 + index * 0.1, duration: prefersReduced ? 0 : 0.4 }}
+      className="glass rounded-xl p-5 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-colors duration-300"
+    >
+      <h3 className="text-[#F0F4FF] font-semibold mb-1.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+        {item.title}
+      </h3>
+      <p className="text-[#8892A4] text-sm leading-relaxed">{item.desc}</p>
+    </motion.div>
+  );
+}
+
+export default function WhyUs() {
+  const prefersReduced = useMotionSafe();
 
   const pillars = [
     {
@@ -111,53 +112,31 @@ export default function WhyUs() {
   ];
 
   return (
-    <section
-      id="why-us"
-      className="py-24 lg:py-32 bg-[#0F1117] relative overflow-hidden"
-      aria-labelledby="why-us-heading"
-    >
+    <section id="why-us" className="py-24 lg:py-32 bg-[#0F1117] relative overflow-hidden" aria-labelledby="why-us-heading">
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(123,97,255,0.05) 0%, transparent 70%)",
-        }}
+        style={{ background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(123,97,255,0.05) 0%, transparent 70%)" }}
         aria-hidden="true"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Stats — each watches itself */}
-        <div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20"
-          role="list"
-          aria-label="Company statistics"
-        >
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20" role="list" aria-label="Company statistics">
           {stats.map((stat, i) => (
-            <StatCard
-              key={stat.label}
-              stat={stat}
-              index={i}
-              prefersReduced={prefersReduced}
-            />
+            <StatCard key={stat.label} stat={stat} index={i} prefersReduced={prefersReduced} />
           ))}
         </div>
 
-        <div
-          className="w-full h-px bg-gradient-to-r from-transparent via-[#1E2230] to-transparent mb-20"
-          aria-hidden="true"
-        />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-[#1E2230] to-transparent mb-20" aria-hidden="true" />
 
         {/* Philosophy */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            ref={leftRef}
-            initial={prefersReduced ? undefined : { opacity: 0, x: -30 }}
-            animate={leftInView ? { opacity: 1, x: 0 } : undefined}
-            transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, x: prefersReduced ? 0 : -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: prefersReduced ? 0 : 0.6, delay: 0.1 }}
           >
-            <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
-              Why Devexec
-            </span>
+            <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Why Devexec</span>
             <h2
               id="why-us-heading"
               className="text-4xl sm:text-5xl font-bold text-[#F0F4FF] mb-6 leading-tight"
@@ -167,66 +146,23 @@ export default function WhyUs() {
               <span className="gradient-text">Business impact.</span>
             </h2>
             <p className="text-[#8892A4] text-lg leading-relaxed mb-6">
-              We don&apos;t just write code — we architect systems that scale,
-              survive, and compound in value over time. Every engagement starts
-              with deep discovery and ends with measurable outcomes.
+              We don&apos;t just write code — we architect systems that scale, survive, and compound in value over time.
+              Every engagement starts with deep discovery and ends with measurable outcomes.
             </p>
             <p className="text-[#8892A4] leading-relaxed">
-              Our team combines the precision of enterprise engineering with the
-              velocity of a startup. We&apos;ve shipped production systems across
-              fintech, healthtech, logistics, and Web3 — and we bring that
-              cross-domain pattern recognition to every new challenge.
+              Our team combines the precision of enterprise engineering with the velocity of a startup. We&apos;ve shipped
+              production systems across fintech, healthtech, logistics, and Web3 — and we bring that cross-domain pattern
+              recognition to every new challenge.
             </p>
           </motion.div>
 
-          {/* Pillar cards — each watches itself */}
-          <div ref={headingRef} className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {pillars.map((item, i) => (
-              <PillarCard
-                key={item.title}
-                item={item}
-                index={i}
-                prefersReduced={prefersReduced}
-                parentInView={headingInView}
-              />
+              <PillarCard key={item.title} item={item} index={i} prefersReduced={prefersReduced} />
             ))}
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function PillarCard({
-  item,
-  index,
-  prefersReduced,
-  parentInView,
-}: {
-  item: { title: string; desc: string };
-  index: number;
-  prefersReduced: boolean;
-  parentInView: boolean;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0 });
-  const visible = isInView || parentInView;
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={prefersReduced ? undefined : { opacity: 0, y: 15 }}
-      animate={visible ? { opacity: 1, y: 0 } : undefined}
-      transition={{ delay: index * 0.1, duration: 0.4 }}
-      className="glass rounded-xl p-5 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-colors duration-300"
-    >
-      <h3
-        className="text-[#F0F4FF] font-semibold mb-1.5"
-        style={{ fontFamily: "var(--font-space-grotesk)" }}
-      >
-        {item.title}
-      </h3>
-      <p className="text-[#8892A4] text-sm leading-relaxed">{item.desc}</p>
-    </motion.div>
   );
 }

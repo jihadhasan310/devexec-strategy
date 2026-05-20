@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
+import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 const techItems = [
   "OpenAI",
@@ -24,20 +24,20 @@ const techItems = [
 function TechBadge({ name }: { name: string }) {
   return (
     <span
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#1E2230] bg-[#0F1117] text-[#8892A4] text-sm font-mono whitespace-nowrap hover:border-[#00D4FF]/40 hover:text-[#F0F4FF] transition-colors duration-200 mx-2"
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#1E2230] bg-[#0F1117] text-[#8892A4] text-sm font-mono whitespace-nowrap mx-2"
       aria-hidden="true"
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-[#00D4FF]/50" />
+      <span className="w-1.5 h-1.5 rounded-full bg-[#00D4FF]/50 flex-shrink-0" />
       {name}
     </span>
   );
 }
 
 export default function TechMarquee() {
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useMotionSafe();
 
-  // Duplicate items for seamless loop
-  const doubled = [...techItems, ...techItems];
+  // Triple the items so the loop is seamless even on wide screens
+  const tripled = [...techItems, ...techItems, ...techItems];
 
   return (
     <section
@@ -50,31 +50,43 @@ export default function TechMarquee() {
         </span>
       </div>
 
-      {/* Screen-reader accessible list */}
+      {/* Accessible list for screen readers */}
       <ul className="sr-only" aria-label="Technology stack">
         {techItems.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
 
-      {/* Visual marquee */}
-      <div
-        className="relative"
-        aria-hidden="true"
-      >
+      {/* Visual marquee — pure CSS, no JS animation library */}
+      <div className="relative" aria-hidden="true">
         {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none bg-gradient-to-r from-[#0F1117] to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none bg-gradient-to-l from-[#0F1117] to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-r from-[#0F1117] to-transparent" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-l from-[#0F1117] to-transparent" />
 
+        {/* The track — CSS animation only, no Framer Motion */}
         <div
-          className={`flex ${prefersReduced ? "" : "animate-marquee"}`}
-          style={{ width: "max-content" }}
+          className="flex"
+          style={{
+            width: "max-content",
+            animation: prefersReduced
+              ? "none"
+              : "marquee-scroll 35s linear infinite",
+            willChange: "transform",
+          }}
         >
-          {doubled.map((item, i) => (
+          {tripled.map((item, i) => (
             <TechBadge key={`${item}-${i}`} name={item} />
           ))}
         </div>
       </div>
+
+      {/* Keyframe injected as a style tag — works on all browsers including mobile */}
+      <style>{`
+        @keyframes marquee-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
+        }
+      `}</style>
     </section>
   );
 }

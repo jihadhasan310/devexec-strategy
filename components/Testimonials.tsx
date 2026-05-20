@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useMotionSafe } from "@/hooks/useMotionSafe";
 
@@ -10,8 +10,7 @@ const testimonials = [
     name: "Sarah Chen",
     role: "CTO",
     company: "NovaPay",
-    quote:
-      "Devexec Strategy rebuilt our entire payment infrastructure on AWS in 8 weeks. The architecture they designed handles 10x our previous load with 40% lower costs. Genuinely impressive engineering.",
+    quote: "Devexec Strategy rebuilt our entire payment infrastructure on AWS in 8 weeks. The architecture they designed handles 10x our previous load with 40% lower costs. Genuinely impressive engineering.",
     rating: 5,
     initials: "SC",
     color: "#00D4FF",
@@ -20,8 +19,7 @@ const testimonials = [
     name: "Marcus Okafor",
     role: "Founder & CEO",
     company: "ChainVault",
-    quote:
-      "We needed a DeFi protocol built right — secure, auditable, and gas-efficient. Devexec delivered a Solidity codebase that passed three independent audits without a single critical finding.",
+    quote: "We needed a DeFi protocol built right — secure, auditable, and gas-efficient. Devexec delivered a Solidity codebase that passed three independent audits without a single critical finding.",
     rating: 5,
     initials: "MO",
     color: "#7B61FF",
@@ -30,8 +28,7 @@ const testimonials = [
     name: "Priya Nair",
     role: "VP of Engineering",
     company: "Logistiq",
-    quote:
-      "Their automation work eliminated 60% of our manual ops overhead. The ML pipeline they built for demand forecasting is now our biggest competitive advantage. They think like owners.",
+    quote: "Their automation work eliminated 60% of our manual ops overhead. The ML pipeline they built for demand forecasting is now our biggest competitive advantage. They think like owners.",
     rating: 5,
     initials: "PN",
     color: "#00D4FF",
@@ -42,89 +39,25 @@ function StarRating({ count }: { count: number }) {
   return (
     <div className="flex gap-1" aria-label={`${count} out of 5 stars`} role="img">
       {Array.from({ length: count }).map((_, i) => (
-        <Star
-          key={i}
-          size={14}
-          className="fill-[#00D4FF] text-[#00D4FF]"
-          aria-hidden="true"
-        />
+        <Star key={i} size={14} className="fill-[#00D4FF] text-[#00D4FF]" aria-hidden="true" />
       ))}
     </div>
   );
 }
 
-function TestimonialCard({
-  t,
-  index,
-  prefersReduced,
-}: {
-  t: (typeof testimonials)[number];
-  index: number;
-  prefersReduced: boolean;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0 });
-
-  return (
-    <motion.article
-      ref={ref}
-      initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : undefined}
-      transition={{ delay: index * 0.12, duration: 0.5 }}
-      role="listitem"
-      className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
-    >
-      <StarRating count={t.rating} />
-
-      <blockquote className="mt-4 mb-6">
-        <p className="text-[#F0F4FF] text-sm leading-relaxed">
-          &ldquo;{t.quote}&rdquo;
-        </p>
-      </blockquote>
-
-      <div className="flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-[#0A0C10] flex-shrink-0"
-          style={{
-            background: `linear-gradient(135deg, ${t.color}, #7B61FF)`,
-          }}
-          aria-hidden="true"
-        >
-          {t.initials}
-        </div>
-        <div>
-          <div className="text-[#F0F4FF] text-sm font-semibold">{t.name}</div>
-          <div className="text-[#8892A4] text-xs">
-            {t.role} · {t.company}
-          </div>
-        </div>
-      </div>
-    </motion.article>
-  );
-}
-
 export default function Testimonials() {
-  const headerRef = useRef<HTMLDivElement>(null);
-  const headerInView = useInView(headerRef, { once: true, amount: 0 });
   const prefersReduced = useMotionSafe();
 
   return (
-    <section
-      id="testimonials"
-      className="py-24 lg:py-32 bg-[#0F1117]"
-      aria-labelledby="testimonials-heading"
-    >
+    <section id="testimonials" className="py-24 lg:py-32 bg-[#0F1117]" aria-labelledby="testimonials-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          ref={headerRef}
-          initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : undefined}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: prefersReduced ? 0 : 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
-            Client Stories
-          </span>
+          <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Client Stories</span>
           <h2
             id="testimonials-heading"
             className="text-4xl sm:text-5xl font-bold text-[#F0F4FF] mb-4"
@@ -133,8 +66,7 @@ export default function Testimonials() {
             Trusted by <span className="gradient-text">Builders</span>
           </h2>
           <p className="text-[#8892A4] text-lg max-w-xl mx-auto">
-            From seed-stage startups to scaling enterprises — here&apos;s what
-            our clients say.
+            From seed-stage startups to scaling enterprises — here&apos;s what our clients say.
           </p>
         </motion.div>
 
@@ -144,12 +76,32 @@ export default function Testimonials() {
           aria-label="Client testimonials"
         >
           {testimonials.map((t, i) => (
-            <TestimonialCard
+            <motion.article
               key={t.name}
-              t={t}
-              index={i}
-              prefersReduced={prefersReduced}
-            />
+              initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: prefersReduced ? 0 : i * 0.12, duration: prefersReduced ? 0 : 0.5 }}
+              role="listitem"
+              className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
+            >
+              <StarRating count={t.rating} />
+              <blockquote className="mt-4 mb-6">
+                <p className="text-[#F0F4FF] text-sm leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
+              </blockquote>
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-[#0A0C10] flex-shrink-0"
+                  style={{ background: `linear-gradient(135deg, ${t.color}, #7B61FF)` }}
+                  aria-hidden="true"
+                >
+                  {t.initials}
+                </div>
+                <div>
+                  <div className="text-[#F0F4FF] text-sm font-semibold">{t.name}</div>
+                  <div className="text-[#8892A4] text-xs">{t.role} · {t.company}</div>
+                </div>
+              </div>
+            </motion.article>
           ))}
         </div>
       </div>
