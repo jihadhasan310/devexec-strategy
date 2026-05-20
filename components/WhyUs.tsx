@@ -29,20 +29,17 @@ function CountUp({
       setCount(target);
       return;
     }
-
     const duration = 1800;
     const steps = 60;
     const increment = target / steps;
     let current = 0;
     let step = 0;
-
     const timer = setInterval(() => {
       step++;
       current = Math.min(increment * step, target);
       setCount(current);
       if (step >= steps) clearInterval(timer);
     }, duration / steps);
-
     return () => clearInterval(timer);
   }, [inView, target, prefersReduced]);
 
@@ -57,10 +54,61 @@ function CountUp({
   );
 }
 
-export default function WhyUs() {
+function StatCard({
+  stat,
+  index,
+  prefersReduced,
+}: {
+  stat: (typeof stats)[number];
+  index: number;
+  prefersReduced: boolean;
+}) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, { once: true, amount: 0 });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={prefersReduced ? undefined : { opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : undefined}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      role="listitem"
+      className="text-center"
+    >
+      <div
+        className="text-4xl sm:text-5xl font-bold gradient-text mb-2"
+        style={{ fontFamily: "var(--font-space-grotesk)" }}
+        aria-label={`${stat.value}${stat.suffix} ${stat.label}`}
+      >
+        <CountUp target={stat.value} suffix={stat.suffix} inView={isInView} />
+      </div>
+      <div className="text-[#8892A4] text-sm font-medium">{stat.label}</div>
+    </motion.div>
+  );
+}
+
+export default function WhyUs() {
+  const headingRef = useRef<HTMLDivElement>(null);
+  const leftRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useMotionSafe();
+
+  const headingInView = useInView(headingRef, { once: true, amount: 0 });
+  const leftInView = useInView(leftRef, { once: true, amount: 0 });
+
+  const pillars = [
+    {
+      title: "Security-First Engineering",
+      desc: "Every system is designed with threat modeling, least-privilege access, and compliance in mind from day one.",
+    },
+    {
+      title: "Transparent Collaboration",
+      desc: "Weekly syncs, shared dashboards, and direct access to engineers — no account managers in the way.",
+    },
+    {
+      title: "Outcome-Oriented Delivery",
+      desc: "We measure success by your business metrics, not story points. Milestones tied to real impact.",
+    },
+  ];
 
   return (
     <section
@@ -77,37 +125,20 @@ export default function WhyUs() {
         aria-hidden="true"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={ref}>
-        {/* Stats row */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Stats — each watches itself */}
         <div
           className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20"
           role="list"
           aria-label="Company statistics"
         >
           {stats.map((stat, i) => (
-            <motion.div
+            <StatCard
               key={stat.label}
-              initial={prefersReduced ? undefined : { opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : undefined}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              role="listitem"
-              className="text-center"
-            >
-              <div
-                className="text-4xl sm:text-5xl font-bold gradient-text mb-2"
-                style={{ fontFamily: "var(--font-space-grotesk)" }}
-                aria-label={`${stat.value}${stat.suffix} ${stat.label}`}
-              >
-                <CountUp
-                  target={stat.value}
-                  suffix={stat.suffix}
-                  inView={isInView}
-                />
-              </div>
-              <div className="text-[#8892A4] text-sm font-medium">
-                {stat.label}
-              </div>
-            </motion.div>
+              stat={stat}
+              index={i}
+              prefersReduced={prefersReduced}
+            />
           ))}
         </div>
 
@@ -119,9 +150,10 @@ export default function WhyUs() {
         {/* Philosophy */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
+            ref={leftRef}
             initial={prefersReduced ? undefined : { opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : undefined}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            animate={leftInView ? { opacity: 1, x: 0 } : undefined}
+            transition={{ duration: 0.6 }}
           >
             <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
               Why Devexec
@@ -147,42 +179,54 @@ export default function WhyUs() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-4">
-            {[
-              {
-                title: "Security-First Engineering",
-                desc: "Every system is designed with threat modeling, least-privilege access, and compliance in mind from day one.",
-              },
-              {
-                title: "Transparent Collaboration",
-                desc: "Weekly syncs, shared dashboards, and direct access to engineers — no account managers in the way.",
-              },
-              {
-                title: "Outcome-Oriented Delivery",
-                desc: "We measure success by your business metrics, not story points. Milestones tied to real impact.",
-              },
-            ].map((item, i) => (
-              <motion.div
+          {/* Pillar cards — each watches itself */}
+          <div ref={headingRef} className="grid grid-cols-1 gap-4">
+            {pillars.map((item, i) => (
+              <PillarCard
                 key={item.title}
-                initial={prefersReduced ? undefined : { opacity: 0, y: 15 }}
-                animate={isInView ? { opacity: 1, y: 0 } : undefined}
-                transition={{ delay: 0.4 + i * 0.1, duration: 0.4 }}
-                className="glass rounded-xl p-5 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-colors duration-300"
-              >
-                <h3
-                  className="text-[#F0F4FF] font-semibold mb-1.5"
-                  style={{ fontFamily: "var(--font-space-grotesk)" }}
-                >
-                  {item.title}
-                </h3>
-                <p className="text-[#8892A4] text-sm leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
+                item={item}
+                index={i}
+                prefersReduced={prefersReduced}
+                parentInView={headingInView}
+              />
             ))}
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function PillarCard({
+  item,
+  index,
+  prefersReduced,
+  parentInView,
+}: {
+  item: { title: string; desc: string };
+  index: number;
+  prefersReduced: boolean;
+  parentInView: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0 });
+  const visible = isInView || parentInView;
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={prefersReduced ? undefined : { opacity: 0, y: 15 }}
+      animate={visible ? { opacity: 1, y: 0 } : undefined}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      className="glass rounded-xl p-5 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-colors duration-300"
+    >
+      <h3
+        className="text-[#F0F4FF] font-semibold mb-1.5"
+        style={{ fontFamily: "var(--font-space-grotesk)" }}
+      >
+        {item.title}
+      </h3>
+      <p className="text-[#8892A4] text-sm leading-relaxed">{item.desc}</p>
+    </motion.div>
   );
 }

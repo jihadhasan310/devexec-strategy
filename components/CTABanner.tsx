@@ -8,7 +8,8 @@ import { useMotionSafe } from "@/hooks/useMotionSafe";
 
 export default function CTABanner() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  // amount:0 — fires as soon as 1px of the section enters viewport
+  const isInView = useInView(ref, { once: true, amount: 0 });
   const prefersReduced = useMotionSafe();
 
   return (
@@ -24,7 +25,8 @@ export default function CTABanner() {
           transition={{ duration: 0.6 }}
           className="relative rounded-3xl overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,97,255,0.15))",
+            background:
+              "linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,97,255,0.15))",
             padding: "1px",
           }}
         >
@@ -43,12 +45,18 @@ export default function CTABanner() {
             />
             <div
               className="absolute -top-20 -left-20 w-64 h-64 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)" }}
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%)",
+              }}
               aria-hidden="true"
             />
             <div
               className="absolute -bottom-20 -right-20 w-64 h-64 rounded-full pointer-events-none"
-              style={{ background: "radial-gradient(circle, rgba(123,97,255,0.1) 0%, transparent 70%)" }}
+              style={{
+                background:
+                  "radial-gradient(circle, rgba(123,97,255,0.1) 0%, transparent 70%)",
+              }}
               aria-hidden="true"
             />
 
@@ -91,11 +99,18 @@ export default function CTABanner() {
                 transition={{ delay: 0.5, duration: 0.5 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center"
               >
-                <Button size="lg" aria-label="Start a conversation with Devexec Strategy">
+                <Button
+                  size="lg"
+                  aria-label="Start a conversation with Devexec Strategy"
+                >
                   Let&apos;s Talk
                   <ArrowRight size={18} aria-hidden="true" />
                 </Button>
-                <Button size="lg" variant="ghost" aria-label="Schedule a discovery call">
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  aria-label="Schedule a discovery call"
+                >
                   Schedule a Call
                 </Button>
               </motion.div>

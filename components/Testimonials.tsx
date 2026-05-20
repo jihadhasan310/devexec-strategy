@@ -42,15 +42,70 @@ function StarRating({ count }: { count: number }) {
   return (
     <div className="flex gap-1" aria-label={`${count} out of 5 stars`} role="img">
       {Array.from({ length: count }).map((_, i) => (
-        <Star key={i} size={14} className="fill-[#00D4FF] text-[#00D4FF]" aria-hidden="true" />
+        <Star
+          key={i}
+          size={14}
+          className="fill-[#00D4FF] text-[#00D4FF]"
+          aria-hidden="true"
+        />
       ))}
     </div>
   );
 }
 
+function TestimonialCard({
+  t,
+  index,
+  prefersReduced,
+}: {
+  t: (typeof testimonials)[number];
+  index: number;
+  prefersReduced: boolean;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0 });
+
+  return (
+    <motion.article
+      ref={ref}
+      initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
+      animate={isInView ? { opacity: 1, y: 0 } : undefined}
+      transition={{ delay: index * 0.12, duration: 0.5 }}
+      role="listitem"
+      className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
+    >
+      <StarRating count={t.rating} />
+
+      <blockquote className="mt-4 mb-6">
+        <p className="text-[#F0F4FF] text-sm leading-relaxed">
+          &ldquo;{t.quote}&rdquo;
+        </p>
+      </blockquote>
+
+      <div className="flex items-center gap-3">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-[#0A0C10] flex-shrink-0"
+          style={{
+            background: `linear-gradient(135deg, ${t.color}, #7B61FF)`,
+          }}
+          aria-hidden="true"
+        >
+          {t.initials}
+        </div>
+        <div>
+          <div className="text-[#F0F4FF] text-sm font-semibold">{t.name}</div>
+          <div className="text-[#8892A4] text-xs">
+            {t.role} · {t.company}
+          </div>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
 export default function Testimonials() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const headerRef = useRef<HTMLDivElement>(null);
+  const headerInView = useInView(headerRef, { once: true, amount: 0 });
   const prefersReduced = useMotionSafe();
 
   return (
@@ -59,10 +114,11 @@ export default function Testimonials() {
       className="py-24 lg:py-32 bg-[#0F1117]"
       aria-labelledby="testimonials-heading"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={ref}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
+          ref={headerRef}
           initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : undefined}
+          animate={headerInView ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
@@ -74,8 +130,7 @@ export default function Testimonials() {
             className="text-4xl sm:text-5xl font-bold text-[#F0F4FF] mb-4"
             style={{ fontFamily: "var(--font-space-grotesk)" }}
           >
-            Trusted by{" "}
-            <span className="gradient-text">Builders</span>
+            Trusted by <span className="gradient-text">Builders</span>
           </h2>
           <p className="text-[#8892A4] text-lg max-w-xl mx-auto">
             From seed-stage startups to scaling enterprises — here&apos;s what
@@ -89,38 +144,12 @@ export default function Testimonials() {
           aria-label="Client testimonials"
         >
           {testimonials.map((t, i) => (
-            <motion.article
+            <TestimonialCard
               key={t.name}
-              initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : undefined}
-              transition={{ delay: i * 0.12, duration: 0.5 }}
-              role="listitem"
-              className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
-            >
-              <StarRating count={t.rating} />
-
-              <blockquote className="mt-4 mb-6">
-                <p className="text-[#F0F4FF] text-sm leading-relaxed">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-              </blockquote>
-
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-[#0A0C10] flex-shrink-0"
-                  style={{ background: `linear-gradient(135deg, ${t.color}, #7B61FF)` }}
-                  aria-hidden="true"
-                >
-                  {t.initials}
-                </div>
-                <div>
-                  <div className="text-[#F0F4FF] text-sm font-semibold">{t.name}</div>
-                  <div className="text-[#8892A4] text-xs">
-                    {t.role} · {t.company}
-                  </div>
-                </div>
-              </div>
-            </motion.article>
+              t={t}
+              index={i}
+              prefersReduced={prefersReduced}
+            />
           ))}
         </div>
       </div>

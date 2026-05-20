@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView, type Variants } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Bot, Cloud, Link2, Cog, Rocket } from "lucide-react";
 import Card from "@/components/ui/Card";
@@ -54,23 +54,82 @@ const services = [
   },
 ];
 
-const containerVariants: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
-};
+// Each card manages its own visibility so no card can get stuck hidden
+function ServiceCard({
+  service,
+  index,
+  prefersReduced,
+}: {
+  service: (typeof services)[number];
+  index: number;
+  prefersReduced: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  // amount:0 = fires as soon as 1px enters viewport — critical for mobile
+  const isInView = useInView(ref, { once: true, amount: 0 });
+  const Icon = service.icon;
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
+  return (
+    <motion.div
+      ref={ref}
+      initial={prefersReduced ? undefined : { opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : undefined}
+      transition={{
+        duration: 0.5,
+        delay: prefersReduced ? 0 : index * 0.08,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      }}
+      role="listitem"
+      className={
+        service.title === "SaaS Development" ? "md:col-span-2 lg:col-span-1" : ""
+      }
+    >
+      <Card glowColor={service.color} className="h-full group">
+        <div
+          className={`
+            w-12 h-12 rounded-xl flex items-center justify-center mb-5
+            bg-gradient-to-br ${service.gradient}
+            border border-[#1E2230] group-hover:border-current
+            transition-all duration-300
+            ${service.color === "cyan" ? "text-[#00D4FF]" : "text-[#7B61FF]"}
+          `}
+          aria-hidden="true"
+        >
+          <Icon size={22} />
+        </div>
+
+        <h3
+          className="text-lg font-semibold text-[#F0F4FF] mb-3"
+          style={{ fontFamily: "var(--font-space-grotesk)" }}
+        >
+          {service.title}
+        </h3>
+        <p className="text-[#8892A4] text-sm leading-relaxed mb-5">
+          {service.description}
+        </p>
+
+        <div
+          className="flex flex-wrap gap-2"
+          aria-label={`Technologies for ${service.title}`}
+        >
+          {service.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-xs font-mono px-2.5 py-1 rounded-full bg-[#1E2230] text-[#8892A4] border border-[#1E2230]"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </Card>
+    </motion.div>
+  );
+}
 
 export default function Services() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const headerRef = useRef<HTMLDivElement>(null);
+  // amount:0 fires immediately when any part of the header enters viewport
+  const headerInView = useInView(headerRef, { once: true, amount: 0 });
   const prefersReduced = useMotionSafe();
 
   return (
@@ -80,13 +139,13 @@ export default function Services() {
       aria-labelledby="services-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
+        {/* Section header — has its own ref, independent of cards */}
         <motion.div
+          ref={headerRef}
           initial={prefersReduced ? undefined : { opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : undefined}
+          animate={headerInView ? { opacity: 1, y: 0 } : undefined}
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
-          ref={ref}
         >
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
             Our Expertise
@@ -96,8 +155,7 @@ export default function Services() {
             className="text-4xl sm:text-5xl font-bold text-[#F0F4FF] mb-4"
             style={{ fontFamily: "var(--font-space-grotesk)" }}
           >
-            What We{" "}
-            <span className="gradient-text">Do</span>
+            What We <span className="gradient-text">Do</span>
           </h2>
           <p className="text-[#8892A4] text-lg max-w-2xl mx-auto">
             Five core disciplines. One unified team. Built to handle the full
@@ -105,63 +163,21 @@ export default function Services() {
           </p>
         </motion.div>
 
-        {/* Cards grid */}
-        <motion.div
-          variants={prefersReduced ? undefined : containerVariants}
-          initial={prefersReduced ? undefined : "hidden"}
-          animate={isInView ? "visible" : "hidden"}
+        {/* Cards — each card watches itself, can never get stuck invisible */}
+        <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           role="list"
           aria-label="Services offered by Devexec Strategy"
         >
-          {services.map((service) => {
-            const Icon = service.icon;
-            return (
-              <motion.div
-                key={service.title}
-                variants={prefersReduced ? undefined : cardVariants}
-                role="listitem"
-                className={service.title === "SaaS Development" ? "md:col-span-2 lg:col-span-1" : ""}
-              >
-                <Card glowColor={service.color} className="h-full group">
-                  <div
-                    className={`
-                      w-12 h-12 rounded-xl flex items-center justify-center mb-5
-                      bg-gradient-to-br ${service.gradient}
-                      border border-[#1E2230] group-hover:border-current
-                      transition-all duration-300
-                      ${service.color === "cyan" ? "text-[#00D4FF]" : "text-[#7B61FF]"}
-                    `}
-                    aria-hidden="true"
-                  >
-                    <Icon size={22} />
-                  </div>
-
-                  <h3
-                    className="text-lg font-semibold text-[#F0F4FF] mb-3"
-                    style={{ fontFamily: "var(--font-space-grotesk)" }}
-                  >
-                    {service.title}
-                  </h3>
-                  <p className="text-[#8892A4] text-sm leading-relaxed mb-5">
-                    {service.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2" aria-label={`Technologies for ${service.title}`}>
-                    {service.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs font-mono px-2.5 py-1 rounded-full bg-[#1E2230] text-[#8892A4] border border-[#1E2230]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+          {services.map((service, i) => (
+            <ServiceCard
+              key={service.title}
+              service={service}
+              index={i}
+              prefersReduced={prefersReduced}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
