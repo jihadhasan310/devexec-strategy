@@ -1,7 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
-
 interface CardProps {
   children: React.ReactNode;
   className?: string;
@@ -21,18 +17,17 @@ export default function Card({
       : "hover:shadow-[0_0_30px_rgba(123,97,255,0.15)] hover:border-[#7B61FF]/40";
 
   return (
-    <motion.div
-      whileHover={hoverable ? { y: -4 } : undefined}
-      transition={{ duration: 0.2 }}
+    <div
       className={`
         glass rounded-2xl p-6
         border border-[#1E2230]
         transition-all duration-300
+        hover:-translate-y-1
         ${hoverable ? glowHover : ""}
         ${className}
       `}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

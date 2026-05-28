@@ -1,8 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import { useFadeUpProps } from "@/lib/motion";
+import Reveal from "@/components/Reveal";
 
 const testimonials = [
   {
@@ -51,15 +50,12 @@ function TestimonialCard({
   t: (typeof testimonials)[number];
   index: number;
 }) {
-  const motionProps = useFadeUpProps({
-    distance: 30,
-    duration: 0.5,
-    delay: index * 0.12,
-  });
-
   return (
-    <motion.article
-      {...motionProps}
+    <Reveal
+      as="article"
+      delay={index * 0.12}
+      duration={0.5}
+      distance={30}
       role="listitem"
       className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
     >
@@ -80,17 +76,15 @@ function TestimonialCard({
           <div className="text-[#8892A4] text-xs">{t.role} · {t.company}</div>
         </div>
       </div>
-    </motion.article>
+    </Reveal>
   );
 }
 
 export default function Testimonials() {
-  const header = useFadeUpProps({ distance: 30, duration: 0.6 });
-
   return (
     <section id="testimonials" className="py-24 lg:py-32 bg-[#0F1117]" aria-labelledby="testimonials-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...header} className="text-center mb-16">
+        <Reveal className="text-center mb-16" duration={0.6} distance={30}>
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Client Stories</span>
           <h2
             id="testimonials-heading"
@@ -102,7 +96,7 @@ export default function Testimonials() {
           <p className="text-[#8892A4] text-lg max-w-xl mx-auto">
             From seed-stage startups to scaling enterprises — here&apos;s what our clients say.
           </p>
-        </motion.div>
+        </Reveal>
 
         <div
           className="flex gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible snap-x snap-mandatory"

@@ -1,9 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useMounted } from "@/hooks/useMounted";
-import { useMotionSafe } from "@/hooks/useMotionSafe";
-import { useFadeUpProps, motionEase } from "@/lib/motion";
+import { useEffect, useRef, type CSSProperties } from "react";
+import Reveal from "@/components/Reveal";
 
 const steps = [
   { number: "01", title: "Discovery", description: "Deep-dive into your goals, constraints, and technical landscape to define the right problem.", color: "#00D4FF" },
@@ -13,6 +11,38 @@ const steps = [
   { number: "05", title: "Scale", description: "Performance optimization, capacity planning, and ongoing engineering support as you grow.", color: "#7B61FF" },
 ];
 
+function ProcessLine() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          el.classList.add("is-visible");
+          io.disconnect();
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="reveal-line h-full origin-left"
+      style={{
+        background: "linear-gradient(90deg, #00D4FF, #7B61FF)",
+        "--reveal-duration": "1.2s",
+        "--reveal-delay": "0.3s",
+      } as CSSProperties}
+    />
+  );
+}
+
 function MobileStep({
   step,
   index,
@@ -20,18 +50,14 @@ function MobileStep({
   step: (typeof steps)[number];
   index: number;
 }) {
-  const motionProps = useFadeUpProps({
-    axis: "x",
-    distance: 20,
-    duration: 0.5,
-    delay: index * 0.1,
-  });
-
   return (
-    <motion.div
-      {...motionProps}
-      role="listitem"
+    <Reveal
+      axis="x"
+      delay={index * 0.1}
+      duration={0.5}
+      distance={20}
       className="relative mb-10 last:mb-0"
+      role="listitem"
     >
       <div
         className="absolute -left-8 w-7 h-7 rounded-full flex items-center justify-center border"
@@ -46,7 +72,7 @@ function MobileStep({
         </h3>
         <p className="text-[#8892A4] text-sm leading-relaxed">{step.description}</p>
       </div>
-    </motion.div>
+    </Reveal>
   );
 }
 
@@ -57,17 +83,13 @@ function DesktopStep({
   step: (typeof steps)[number];
   index: number;
 }) {
-  const motionProps = useFadeUpProps({
-    distance: 30,
-    duration: 0.5,
-    delay: index * 0.12,
-  });
-
   return (
-    <motion.div
-      {...motionProps}
-      role="listitem"
+    <Reveal
+      delay={index * 0.12}
+      duration={0.5}
+      distance={30}
       className="flex flex-col items-center text-center"
+      role="listitem"
     >
       <div
         className="relative z-10 w-16 h-16 rounded-full flex items-center justify-center mb-6 border-2"
@@ -80,19 +102,15 @@ function DesktopStep({
         {step.title}
       </h3>
       <p className="text-[#8892A4] text-sm leading-relaxed">{step.description}</p>
-    </motion.div>
+    </Reveal>
   );
 }
 
 export default function Process() {
-  const mounted = useMounted();
-  const prefersReduced = useMotionSafe();
-  const header = useFadeUpProps({ distance: 30, duration: 0.6 });
-
   return (
     <section id="process" className="py-24 lg:py-32 bg-[#0A0C10]" aria-labelledby="process-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...header} className="text-center mb-16">
+        <Reveal className="text-center mb-16" duration={0.6} distance={30}>
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Our Process</span>
           <h2
             id="process-heading"
@@ -104,23 +122,12 @@ export default function Process() {
           <p className="text-[#8892A4] text-lg max-w-2xl mx-auto">
             A proven five-phase framework that takes ideas from whiteboard to production — with full transparency at every step.
           </p>
-        </motion.div>
+        </Reveal>
 
         <div className="hidden lg:block">
           <div className="relative">
             <div className="absolute top-8 left-0 right-0 h-px" aria-hidden="true">
-              <motion.div
-                initial={mounted && !prefersReduced ? { scaleX: 0 } : false}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true, amount: 0 }}
-                transition={{
-                  duration: prefersReduced ? 0 : 1.2,
-                  delay: prefersReduced ? 0 : 0.3,
-                  ease: motionEase,
-                }}
-                className="h-full origin-left"
-                style={{ background: "linear-gradient(90deg, #00D4FF, #7B61FF)", opacity: 1 }}
-              />
+              <ProcessLine />
             </div>
             <div className="grid grid-cols-5 gap-4" role="list" aria-label="Process steps">
               {steps.map((step, i) => (

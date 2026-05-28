@@ -1,9 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Bot, Cloud, Link2, Cog, Rocket } from "lucide-react";
 import Card from "@/components/ui/Card";
-import { useFadeUpProps } from "@/lib/motion";
+import Reveal from "@/components/Reveal";
 
 const services = [
   {
@@ -60,20 +59,15 @@ function ServiceCard({
   service: (typeof services)[number];
   index: number;
 }) {
-  const motionProps = useFadeUpProps({
-    distance: 40,
-    duration: 0.5,
-    delay: index * 0.08,
-  });
   const Icon = service.icon;
 
   return (
-    <motion.div
-      {...motionProps}
+    <Reveal
+      delay={index * 0.08}
+      duration={0.5}
+      distance={40}
+      className={service.title === "SaaS Development" ? "md:col-span-2 lg:col-span-1" : ""}
       role="listitem"
-      className={
-        service.title === "SaaS Development" ? "md:col-span-2 lg:col-span-1" : ""
-      }
     >
       <Card glowColor={service.color} className="h-full group">
         <div
@@ -113,13 +107,11 @@ function ServiceCard({
           ))}
         </div>
       </Card>
-    </motion.div>
+    </Reveal>
   );
 }
 
 export default function Services() {
-  const header = useFadeUpProps({ distance: 30, duration: 0.6 });
-
   return (
     <section
       id="services"
@@ -127,7 +119,7 @@ export default function Services() {
       aria-labelledby="services-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...header} className="text-center mb-16">
+        <Reveal className="text-center mb-16" duration={0.6} distance={30}>
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
             Our Expertise
           </span>
@@ -142,7 +134,7 @@ export default function Services() {
             Five core disciplines. One unified team. Built to handle the full
             complexity of modern technology products.
           </p>
-        </motion.div>
+        </Reveal>
 
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"

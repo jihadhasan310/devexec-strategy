@@ -1,9 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useInView } from "framer-motion";
-import { useMotionSafe } from "@/hooks/useMotionSafe";
-import { useFadeUpProps } from "@/lib/motion";
+import { useEffect, useRef, useState } from "react";
+import Reveal from "@/components/Reveal";
 
 const stats = [
   { value: 50, suffix: "+", label: "Projects Delivered" },
@@ -22,11 +20,19 @@ function CountUp({
   inView: boolean;
 }) {
   const [count, setCount] = useState(0);
-  const prefersReduced = useMotionSafe();
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+  }, []);
 
   useEffect(() => {
     if (!inView) return;
-    if (prefersReduced) { setCount(target); return; }
+    if (reduced) {
+      setCount(target);
+      return;
+    }
     const steps = 60;
     const increment = target / steps;
     let step = 0;
@@ -36,7 +42,7 @@ function CountUp({
       if (step >= steps) clearInterval(timer);
     }, 1800 / steps);
     return () => clearInterval(timer);
-  }, [inView, target, prefersReduced]);
+  }, [inView, target, reduced]);
 
   const display = target % 1 !== 0 ? count.toFixed(1) : Math.round(count).toString();
   return <span>{display}{suffix}</span>;
@@ -50,29 +56,42 @@ function StatCard({
   index: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0 });
-  const motionProps = useFadeUpProps({
-    distance: 20,
-    duration: 0.5,
-    delay: index * 0.1,
-  });
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <motion.div
-      ref={ref}
-      {...motionProps}
-      role="listitem"
+    <Reveal
+      delay={index * 0.1}
+      duration={0.5}
+      distance={20}
       className="text-center"
+      role="listitem"
     >
       <div
+        ref={ref}
         className="text-4xl sm:text-5xl font-bold gradient-text mb-2"
         style={{ fontFamily: "var(--font-space-grotesk)" }}
         aria-label={`${stat.value}${stat.suffix} ${stat.label}`}
       >
-        <CountUp target={stat.value} suffix={stat.suffix} inView={isInView} />
+        <CountUp target={stat.value} suffix={stat.suffix} inView={inView} />
       </div>
       <div className="text-[#8892A4] text-sm font-medium">{stat.label}</div>
-    </motion.div>
+    </Reveal>
   );
 }
 
@@ -83,28 +102,22 @@ function PillarCard({
   item: { title: string; desc: string };
   index: number;
 }) {
-  const motionProps = useFadeUpProps({
-    distance: 15,
-    duration: 0.4,
-    delay: 0.1 + index * 0.1,
-  });
-
   return (
-    <motion.div
-      {...motionProps}
+    <Reveal
+      delay={0.1 + index * 0.1}
+      duration={0.4}
+      distance={15}
       className="glass rounded-xl p-5 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-colors duration-300"
     >
       <h3 className="text-[#F0F4FF] font-semibold mb-1.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>
         {item.title}
       </h3>
       <p className="text-[#8892A4] text-sm leading-relaxed">{item.desc}</p>
-    </motion.div>
+    </Reveal>
   );
 }
 
 export default function WhyUs() {
-  const philosophy = useFadeUpProps({ axis: "x", distance: 30, duration: 0.6, delay: 0.1 });
-
   const pillars = [
     {
       title: "Security-First Engineering",
@@ -138,7 +151,7 @@ export default function WhyUs() {
         <div className="w-full h-px bg-gradient-to-r from-transparent via-[#1E2230] to-transparent mb-20" aria-hidden="true" />
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div {...philosophy}>
+          <Reveal axis="x" delay={0.1} duration={0.6} distance={30}>
             <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Why Devexec</span>
             <h2
               id="why-us-heading"
@@ -157,7 +170,7 @@ export default function WhyUs() {
               production systems across fintech, healthtech, logistics, and Web3 — and we bring that cross-domain pattern
               recognition to every new challenge.
             </p>
-          </motion.div>
+          </Reveal>
 
           <div className="grid grid-cols-1 gap-4">
             {pillars.map((item, i) => (
