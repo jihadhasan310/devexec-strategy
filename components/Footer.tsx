@@ -23,8 +23,8 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { label: "Twitter / X", href: "https://twitter.com", icon: Globe },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: ExternalLink },
+  { label: "Twitter / X", href: "https://x.com/devexecstrategy", icon: Globe },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/devexec-strategy", icon: ExternalLink },
   { label: "GitHub", href: "https://github.com", icon: Code2 },
 ];
 
