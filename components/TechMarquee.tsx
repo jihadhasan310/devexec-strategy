@@ -1,7 +1,3 @@
-"use client";
-
-import { useMotionSafe } from "@/hooks/useMotionSafe";
-
 const techItems = [
   "OpenAI",
   "AWS",
@@ -34,9 +30,6 @@ function TechBadge({ name }: { name: string }) {
 }
 
 export default function TechMarquee() {
-  const prefersReduced = useMotionSafe();
-
-  // Triple the items so the loop is seamless even on wide screens
   const tripled = [...techItems, ...techItems, ...techItems];
 
   return (
@@ -50,43 +43,22 @@ export default function TechMarquee() {
         </span>
       </div>
 
-      {/* Accessible list for screen readers */}
       <ul className="sr-only" aria-label="Technology stack">
         {techItems.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
 
-      {/* Visual marquee — pure CSS, no JS animation library */}
       <div className="relative" aria-hidden="true">
-        {/* Fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-r from-[#0F1117] to-transparent" />
         <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 pointer-events-none bg-gradient-to-l from-[#0F1117] to-transparent" />
 
-        {/* The track — CSS animation only, no Framer Motion */}
-        <div
-          className="flex"
-          style={{
-            width: "max-content",
-            animation: prefersReduced
-              ? "none"
-              : "marquee-scroll 35s linear infinite",
-            willChange: "transform",
-          }}
-        >
+        <div className="marquee-track flex">
           {tripled.map((item, i) => (
             <TechBadge key={`${item}-${i}`} name={item} />
           ))}
         </div>
       </div>
-
-      {/* Keyframe injected as a style tag — works on all browsers including mobile */}
-      <style>{`
-        @keyframes marquee-scroll {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-33.333%); }
-        }
-      `}</style>
     </section>
   );
 }

@@ -60,3 +60,20 @@ body {
 ::-webkit-scrollbar-track { background: #0A0C10; }
 ::-webkit-scrollbar-thumb { background: #1E2230; border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: #00D4FF; }
+
+/* Tech marquee — CSS-only so it runs on mobile without JS */
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+.marquee-track {
+  width: max-content;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track {
+    animation: marquee-scroll 35s linear infinite;
+  }
+}

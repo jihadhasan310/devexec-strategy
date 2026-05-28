@@ -3,18 +3,21 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { useMotionSafe } from "@/hooks/useMotionSafe";
+import { useFadeUpProps } from "@/lib/motion";
 
 export default function CTABanner() {
-  const prefersReduced = useMotionSafe();
+  const wrapper = useFadeUpProps({ distance: 30, duration: 0.6 });
+  const eyebrow = useFadeUpProps({ distance: 12, duration: 0.4, delay: 0.2 });
+  const heading = useFadeUpProps({ distance: 20, duration: 0.5, delay: 0.3 });
+  const body = useFadeUpProps({ distance: 20, duration: 0.5, delay: 0.4 });
+  const actions = useFadeUpProps({ distance: 20, duration: 0.5, delay: 0.5 });
+  const footnotes = useFadeUpProps({ distance: 12, duration: 0.4, delay: 0.7 });
 
   return (
     <section id="cta" className="py-24 lg:py-32 bg-[#0A0C10]" aria-labelledby="cta-heading">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReduced ? 0 : 0.6 }}
+          {...wrapper}
           className="relative rounded-3xl overflow-hidden"
           style={{ background: "linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,97,255,0.15))", padding: "1px" }}
         >
@@ -29,9 +32,7 @@ export default function CTABanner() {
 
             <div className="relative z-10">
               <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: prefersReduced ? 0 : 0.2 }}
+                {...eyebrow}
                 className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-6 block"
               >
                 Let&apos;s Build Together
@@ -39,9 +40,7 @@ export default function CTABanner() {
 
               <motion.h2
                 id="cta-heading"
-                initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: prefersReduced ? 0 : 0.3, duration: prefersReduced ? 0 : 0.5 }}
+                {...heading}
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#F0F4FF] mb-6 leading-tight"
                 style={{ fontFamily: "var(--font-space-grotesk)" }}
               >
@@ -49,18 +48,14 @@ export default function CTABanner() {
               </motion.h2>
 
               <motion.p
-                initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: prefersReduced ? 0 : 0.4, duration: prefersReduced ? 0 : 0.5 }}
+                {...body}
                 className="text-[#8892A4] text-lg max-w-2xl mx-auto mb-10"
               >
                 Tell us about your project. We&apos;ll respond within 24 hours with a clear path forward — no sales pitch, just honest engineering advice.
               </motion.p>
 
               <motion.div
-                initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: prefersReduced ? 0 : 0.5, duration: prefersReduced ? 0 : 0.5 }}
+                {...actions}
                 className="flex flex-col sm:flex-row gap-4 justify-center"
               >
                 <Button size="lg" aria-label="Start a conversation with Devexec Strategy">
@@ -73,9 +68,7 @@ export default function CTABanner() {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: prefersReduced ? 0 : 0.7 }}
+                {...footnotes}
                 className="flex flex-wrap justify-center gap-6 mt-10 text-xs text-[#8892A4] font-mono"
               >
                 <span>✓ Response within 24h</span>

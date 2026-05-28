@@ -1,10 +1,9 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import { Bot, Cloud, Link2, Cog, Rocket } from "lucide-react";
 import Card from "@/components/ui/Card";
-import { useMotionSafe } from "@/hooks/useMotionSafe";
+import { useFadeUpProps } from "@/lib/motion";
 
 const services = [
   {
@@ -57,28 +56,20 @@ const services = [
 function ServiceCard({
   service,
   index,
-  prefersReduced,
 }: {
   service: (typeof services)[number];
   index: number;
-  prefersReduced: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0 });
+  const motionProps = useFadeUpProps({
+    distance: 40,
+    duration: 0.5,
+    delay: index * 0.08,
+  });
   const Icon = service.icon;
 
   return (
     <motion.div
-      ref={ref}
-      // Always animate to visible — never leave stuck at opacity:0
-      initial={{ opacity: 0, y: prefersReduced ? 0 : 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: prefersReduced ? 0 : 0.5,
-        // Only delay once the element is in view; if already in view on mount, delay=0
-        delay: prefersReduced || !isInView ? 0 : index * 0.08,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
+      {...motionProps}
       role="listitem"
       className={
         service.title === "SaaS Development" ? "md:col-span-2 lg:col-span-1" : ""
@@ -127,9 +118,7 @@ function ServiceCard({
 }
 
 export default function Services() {
-  const headerRef = useRef<HTMLDivElement>(null);
-  const headerInView = useInView(headerRef, { once: true, amount: 0 });
-  const prefersReduced = useMotionSafe();
+  const header = useFadeUpProps({ distance: 30, duration: 0.6 });
 
   return (
     <section
@@ -138,14 +127,7 @@ export default function Services() {
       aria-labelledby="services-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          ref={headerRef}
-          initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReduced ? 0 : 0.6 }}
-          className="text-center mb-16"
-        >
+        <motion.div {...header} className="text-center mb-16">
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">
             Our Expertise
           </span>
@@ -162,19 +144,13 @@ export default function Services() {
           </p>
         </motion.div>
 
-        {/* Cards */}
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           role="list"
           aria-label="Services offered by Devexec Strategy"
         >
           {services.map((service, i) => (
-            <ServiceCard
-              key={service.title}
-              service={service}
-              index={i}
-              prefersReduced={prefersReduced}
-            />
+            <ServiceCard key={service.title} service={service} index={i} />
           ))}
         </div>
       </div>

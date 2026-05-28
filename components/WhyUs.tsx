@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { useMotionSafe } from "@/hooks/useMotionSafe";
+import { useFadeUpProps } from "@/lib/motion";
 
 const stats = [
   { value: 50, suffix: "+", label: "Projects Delivered" },
@@ -41,20 +42,25 @@ function CountUp({
   return <span>{display}{suffix}</span>;
 }
 
-function StatCard({ stat, index, prefersReduced }: {
+function StatCard({
+  stat,
+  index,
+}: {
   stat: (typeof stats)[number];
   index: number;
-  prefersReduced: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0 });
+  const motionProps = useFadeUpProps({
+    distance: 20,
+    duration: 0.5,
+    delay: index * 0.1,
+  });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: prefersReduced ? 0 : 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: prefersReduced ? 0 : index * 0.1, duration: prefersReduced ? 0 : 0.5 }}
+      {...motionProps}
       role="listitem"
       className="text-center"
     >
@@ -70,19 +76,22 @@ function StatCard({ stat, index, prefersReduced }: {
   );
 }
 
-function PillarCard({ item, index, prefersReduced }: {
+function PillarCard({
+  item,
+  index,
+}: {
   item: { title: string; desc: string };
   index: number;
-  prefersReduced: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const motionProps = useFadeUpProps({
+    distance: 15,
+    duration: 0.4,
+    delay: 0.1 + index * 0.1,
+  });
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: prefersReduced ? 0 : 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: prefersReduced ? 0 : 0.1 + index * 0.1, duration: prefersReduced ? 0 : 0.4 }}
+      {...motionProps}
       className="glass rounded-xl p-5 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-colors duration-300"
     >
       <h3 className="text-[#F0F4FF] font-semibold mb-1.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>
@@ -94,7 +103,7 @@ function PillarCard({ item, index, prefersReduced }: {
 }
 
 export default function WhyUs() {
-  const prefersReduced = useMotionSafe();
+  const philosophy = useFadeUpProps({ axis: "x", distance: 30, duration: 0.6, delay: 0.1 });
 
   const pillars = [
     {
@@ -120,22 +129,16 @@ export default function WhyUs() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20" role="list" aria-label="Company statistics">
           {stats.map((stat, i) => (
-            <StatCard key={stat.label} stat={stat} index={i} prefersReduced={prefersReduced} />
+            <StatCard key={stat.label} stat={stat} index={i} />
           ))}
         </div>
 
         <div className="w-full h-px bg-gradient-to-r from-transparent via-[#1E2230] to-transparent mb-20" aria-hidden="true" />
 
-        {/* Philosophy */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: prefersReduced ? 0 : -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: prefersReduced ? 0 : 0.6, delay: 0.1 }}
-          >
+          <motion.div {...philosophy}>
             <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Why Devexec</span>
             <h2
               id="why-us-heading"
@@ -158,7 +161,7 @@ export default function WhyUs() {
 
           <div className="grid grid-cols-1 gap-4">
             {pillars.map((item, i) => (
-              <PillarCard key={item.title} item={item} index={i} prefersReduced={prefersReduced} />
+              <PillarCard key={item.title} item={item} index={i} />
             ))}
           </div>
         </div>

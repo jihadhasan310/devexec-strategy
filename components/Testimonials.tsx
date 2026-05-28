@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import { useMotionSafe } from "@/hooks/useMotionSafe";
+import { useFadeUpProps } from "@/lib/motion";
 
 const testimonials = [
   {
@@ -45,18 +44,53 @@ function StarRating({ count }: { count: number }) {
   );
 }
 
+function TestimonialCard({
+  t,
+  index,
+}: {
+  t: (typeof testimonials)[number];
+  index: number;
+}) {
+  const motionProps = useFadeUpProps({
+    distance: 30,
+    duration: 0.5,
+    delay: index * 0.12,
+  });
+
+  return (
+    <motion.article
+      {...motionProps}
+      role="listitem"
+      className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
+    >
+      <StarRating count={t.rating} />
+      <blockquote className="mt-4 mb-6">
+        <p className="text-[#F0F4FF] text-sm leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
+      </blockquote>
+      <div className="flex items-center gap-3">
+        <div
+          className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-[#0A0C10] flex-shrink-0"
+          style={{ background: `linear-gradient(135deg, ${t.color}, #7B61FF)` }}
+          aria-hidden="true"
+        >
+          {t.initials}
+        </div>
+        <div>
+          <div className="text-[#F0F4FF] text-sm font-semibold">{t.name}</div>
+          <div className="text-[#8892A4] text-xs">{t.role} · {t.company}</div>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
 export default function Testimonials() {
-  const prefersReduced = useMotionSafe();
+  const header = useFadeUpProps({ distance: 30, duration: 0.6 });
 
   return (
     <section id="testimonials" className="py-24 lg:py-32 bg-[#0F1117]" aria-labelledby="testimonials-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: prefersReduced ? 0 : 0.6 }}
-          className="text-center mb-16"
-        >
+        <motion.div {...header} className="text-center mb-16">
           <span className="text-xs font-mono text-[#00D4FF] tracking-widest uppercase mb-4 block">Client Stories</span>
           <h2
             id="testimonials-heading"
@@ -76,32 +110,7 @@ export default function Testimonials() {
           aria-label="Client testimonials"
         >
           {testimonials.map((t, i) => (
-            <motion.article
-              key={t.name}
-              initial={{ opacity: 0, y: prefersReduced ? 0 : 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: prefersReduced ? 0 : i * 0.12, duration: prefersReduced ? 0 : 0.5 }}
-              role="listitem"
-              className="glass rounded-2xl p-6 border border-[#1E2230] hover:border-[#00D4FF]/30 transition-all duration-300 flex-shrink-0 w-[85vw] sm:w-[70vw] lg:w-auto snap-start"
-            >
-              <StarRating count={t.rating} />
-              <blockquote className="mt-4 mb-6">
-                <p className="text-[#F0F4FF] text-sm leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
-              </blockquote>
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-[#0A0C10] flex-shrink-0"
-                  style={{ background: `linear-gradient(135deg, ${t.color}, #7B61FF)` }}
-                  aria-hidden="true"
-                >
-                  {t.initials}
-                </div>
-                <div>
-                  <div className="text-[#F0F4FF] text-sm font-semibold">{t.name}</div>
-                  <div className="text-[#8892A4] text-xs">{t.role} · {t.company}</div>
-                </div>
-              </div>
-            </motion.article>
+            <TestimonialCard key={t.name} t={t} index={i} />
           ))}
         </div>
       </div>
