@@ -21,6 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://devexec-strategy.vercel.app"),
   title: "Devexec Strategy — Engineering the Future. Executing at Scale.",
   description:
     "Devexec Strategy builds AI systems, cloud architectures, blockchain protocols, and SaaS platforms engineered for scale. Partner with us to build what's next.",
@@ -35,6 +36,10 @@ export const metadata: Metadata = {
     "Web3",
   ],
   authors: [{ name: "Devexec Strategy" }],
+  icons: {
+    icon: [{ url: "/icon", type: "image/png" }],
+    apple: [{ url: "/apple-icon", type: "image/png" }],
+  },
   openGraph: {
     title: "Devexec Strategy — Engineering the Future. Executing at Scale.",
     description:

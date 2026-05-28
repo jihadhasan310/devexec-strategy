@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -56,12 +57,14 @@ export default function Navbar() {
             className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D4FF] rounded"
             aria-label="Devexec Strategy — home"
           >
-            <span className="text-lg sm:text-xl font-bold gradient-text" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-              Devexec
-            </span>
-            <span className="text-lg sm:text-xl font-bold text-[#F0F4FF]" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-              Strategy
-            </span>
+            <Image
+              src="/logo.png"
+              alt="Devexec Strategy"
+              width={220}
+              height={40}
+              className="h-7 sm:h-8 w-auto"
+              priority
+            />
           </a>
 
           {/* Desktop links */}
