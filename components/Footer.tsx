@@ -1,4 +1,5 @@
-import { Globe, Code2, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import { XIcon, LinkedInIcon, GithubIcon } from "@/components/icons/SocialIcons";
 
 const footerLinks = {
   Services: [
@@ -23,32 +24,29 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { label: "Twitter / X", href: "https://x.com/devexecstrategy", icon: Globe },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/devexec-strategy", icon: ExternalLink },
-  { label: "GitHub", href: "https://github.com", icon: Code2 },
+  { label: "X", href: "https://x.com/devexecstrategy", icon: XIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/devexec-strategy", icon: LinkedInIcon },
+  { label: "GitHub", href: "https://github.com/jihadhasan310/devexec-strategy", icon: GithubIcon },
 ];
 
 export default function Footer() {
   return (
     <footer className="bg-[#0F1117] border-t border-[#1E2230]" role="contentinfo" aria-label="Site footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-
-        {/* Top grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
-
-          {/* Brand — full width on mobile */}
           <div className="col-span-2 sm:col-span-2 lg:col-span-2">
             <a
               href="#"
               className="inline-flex items-center mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D4FF] rounded"
               aria-label="Devexec Strategy — home"
             >
-              <span className="text-xl font-bold gradient-text" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-                Devexec
-              </span>
-              <span className="text-xl font-bold text-[#F0F4FF]" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-                Strategy
-              </span>
+              <Image
+                src="/logo.png"
+                alt="Devexec Strategy"
+                width={220}
+                height={40}
+                className="h-7 sm:h-8 w-auto"
+              />
             </a>
             <p className="text-[#8892A4] text-sm leading-relaxed max-w-xs mb-6">
               Engineering the Future. Executing at Scale. We build AI systems,
@@ -65,13 +63,12 @@ export default function Footer() {
                   aria-label={`Follow us on ${label}`}
                   className="w-9 h-9 rounded-lg border border-[#1E2230] flex items-center justify-center text-[#8892A4] hover:text-[#00D4FF] hover:border-[#00D4FF]/40 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D4FF]"
                 >
-                  <Icon size={16} aria-hidden="true" />
+                  <Icon size={16} />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Link columns — each takes 1 col on mobile (2-col grid), 1 col on lg */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="text-[#F0F4FF] text-sm font-semibold mb-4" style={{ fontFamily: "var(--font-space-grotesk)" }}>
@@ -93,7 +90,6 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Bottom bar */}
         <div className="mt-10 pt-8 border-t border-[#1E2230] flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <p className="text-[#8892A4] text-xs font-mono">© 2026 Devexec Strategy. All rights reserved.</p>
           <p className="text-[#8892A4] text-xs font-mono">Engineering the Future. Executing at Scale.</p>

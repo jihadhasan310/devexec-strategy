@@ -5,11 +5,15 @@ import { forwardRef } from "react";
 type ButtonVariant = "primary" | "ghost" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   children: React.ReactNode;
-}
+  href?: string;
+} & (
+  | (React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string })
+  | React.ButtonHTMLAttributes<HTMLButtonElement>
+);
 
 const sizeClasses: Record<ButtonSize, string> = {
   sm: "px-4 py-2 text-sm",
@@ -26,24 +30,31 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent border border-[#00D4FF] text-[#00D4FF] hover:bg-[#00D4FF]/10",
 };
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = "primary", size = "md", children, className = "", ...props }, ref) => {
+const baseClasses = `
+  inline-flex items-center justify-center gap-2 rounded-full
+  font-medium transition-all duration-200 cursor-pointer
+  active:scale-[0.98] hover:scale-[1.02]
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D4FF]
+  focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0C10]
+  disabled:opacity-50 disabled:cursor-not-allowed
+`;
+
+const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  ({ variant = "primary", size = "md", children, className = "", href, ...props }, ref) => {
+    const classes = `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+
+    if (href) {
+      const anchorProps = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+      return (
+        <a ref={ref as React.Ref<HTMLAnchorElement>} href={href} className={classes} {...anchorProps}>
+          {children}
+        </a>
+      );
+    }
+
+    const buttonProps = props as React.ButtonHTMLAttributes<HTMLButtonElement>;
     return (
-      <button
-        ref={ref}
-        className={`
-          inline-flex items-center justify-center gap-2 rounded-full
-          font-medium transition-all duration-200 cursor-pointer
-          active:scale-[0.98] hover:scale-[1.02]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00D4FF]
-          focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0C10]
-          disabled:opacity-50 disabled:cursor-not-allowed
-          ${sizeClasses[size]}
-          ${variantClasses[variant]}
-          ${className}
-        `}
-        {...props}
-      >
+      <button ref={ref as React.Ref<HTMLButtonElement>} className={classes} {...buttonProps}>
         {children}
       </button>
     );

@@ -4,6 +4,8 @@ import { ArrowRight } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Reveal from "@/components/Reveal";
 
+const CONTACT_EMAIL = "devexecstrategy@gmail.com";
+
 export default function CTABanner() {
   return (
     <section id="cta" className="py-24 lg:py-32 bg-[#0A0C10]" aria-labelledby="cta-heading">
@@ -34,11 +36,20 @@ export default function CTABanner() {
               </Reveal>
 
               <Reveal delay={0.5} duration={0.5} distance={20} className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" aria-label="Start a conversation with Devexec Strategy">
+                <Button
+                  size="lg"
+                  href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Let's Talk — Project Inquiry")}`}
+                  aria-label="Email Devexec Strategy to start a conversation"
+                >
                   Let&apos;s Talk
                   <ArrowRight size={18} aria-hidden="true" />
                 </Button>
-                <Button size="lg" variant="ghost" aria-label="Schedule a discovery call">
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Schedule a Call")}`}
+                  aria-label="Email Devexec Strategy to schedule a call"
+                >
                   Schedule a Call
                 </Button>
               </Reveal>
